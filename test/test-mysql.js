@@ -1,13 +1,23 @@
 /* globals describe it */
 var dedent = require('dedent')
-var conString1 = 'mysql://root:@localhost/db1'
+var conString1 = 'mysql://sdc:@localhost/dbdiff'
 var conSettings2 = {
-  dialect: 'mysql',
-  username: 'root',
-  password: '',
-  database: 'db2',
-  host: 'localhost'
+    dialect: 'mysql',
+    username: 'devuser',
+    password: 'Amax2youmomentary',
+    port: '4217',
+    database: 'dbdiff',
+    host: 'localhost'
 }
+// var conSettings2 = 'mysql://devuser:Amax2youmomentary@localhost:4217/dbdiff'
+// var conString1 = 'mysql://root:@localhost/db1'
+// var conSettings2 = {
+//   dialect: 'mysql',
+//   username: 'root',
+//   password: '',
+//   database: 'db2',
+//   host: 'localhost'
+// }
 var utils = require('./utils')('mysql', conString1, conSettings2)
 
 describe('MySQL', () => {
