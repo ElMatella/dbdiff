@@ -61,11 +61,9 @@ class MysqlClient {
    */
   connect() {
     return new Promise((resolve, reject) => {
-      // create new connection
       var conn = mysql.createConnection(this.options);
       this.connection = conn
       this.connection.connect((err) => {
-        // err = new Error('connection error'); // togle to mimic connection error
         if (err) { return reject(err); }
         return resolve(this.connection.threadId);
       });
@@ -83,7 +81,6 @@ class MysqlClient {
   _query(sql, params = []) {
     return new Promise((resolve, reject) => {
       this.connection.query(sql, params, (err, rows, fields) => {
-        // throw new Error('connection error'); // toggle to mimic query error
         if (err) return reject(err);
         return resolve({ rows, fields });
       })
@@ -95,7 +92,7 @@ class MysqlClient {
       .then((result) => {
         return result.rows
       }).catch((reason) => {
-          console.error('find query failed ('+reason+').');
+          console.error('find query failed ('+ JSON.stringify(reason)+').');
     });
   }
 
@@ -123,7 +120,6 @@ class MysqlClient {
   query(sql, params = []) {
     return new Promise((resolve, reject) => {
       this.connect().then((threadId) => {
-        // console.info('connection');
         // connected to the database
         this._query(sql, params)
           .then((queryResult) => {
@@ -134,37 +130,34 @@ class MysqlClient {
                     resolve(result)
                   }).catch((res) => {
                     // could not close the connection
-                    if(res.supressed) console.error('db closed error (result) ' + res.supressed);
+                    if(res.supressed) console.error('db close error. ' + res.supressed);
                     resolve(res)
                   });
             }).catch((error) => {
                 // there was an error with the query, attempt to close the connection
-                console.log('Query error HERE. ' + JSON.stringify(error));
                 this.close(error, null)
                   .then((err) => {
                     // connection was closed
                     return reject(err);
                   }).catch((e) => {
+                    if(e.supressed) console.error('db close error. ' + e.supressed);
                     // could not close the connection
-                    // if(e.supressed) console.error('db closed error ' + e.supressed); // no need to log, error is passed on
-                    console.log('query error and close error. '+ JSON.stringify(e));
                     reject(e);
                   })
             });
       }).catch((connError) => {
-        // could not connect to the database
+        // could not connect to the database // might not need to attempt to close if you don't have a valid connection
         this.close(connError, null)
           .then((error) => {
             // connection was closed
             return reject(error);
           }).catch((e) => {
             // could not close the connection
-            // if(e.supressed) console.error('db closed error ' + e.supressed); // no need to log, error is passed on
             reject(e);
           });
       });
     });
-  } //query
+  }
 
   /**
    * close - close database connection
@@ -178,11 +171,8 @@ class MysqlClient {
   close(queryError , queryResult) {
     return new Promise((resolve, reject) => {
       this.connection.end((dbError) => {
-        // dbError = new Error('DB HUNG'); // toggle to mock db close error
-
         if(dbError && queryResult) { return reject(this._appendError(queryResult, dbError));} // db close error and query result. supress db error
         if(dbError && queryError) {  return reject(this._appendError(queryError, dbError)); } // db error and query error. supress db error
-
         if(dbError) { return reject(dbErr); } // only db error
         if(queryError) { return resolve(queryError); } // only query error (resolve because db close was a success)
         if(queryError === null && queryResult === null) { return resolve(); } // normal call to close() without a prior query
@@ -192,6 +182,16 @@ class MysqlClient {
     });
   }
 
+
+
+  /**
+   * _appendError - appends an error onto an object as a .supressed attribute.
+   * Will not overwrite an existing .supressed attribute
+   *
+   * @param  {type} object description
+   * @param  {type} error  description
+   * @return {type}        description
+   */
   _appendError(object, error){
     let errors = [];
     for (var prop in object) {
@@ -212,18 +212,5 @@ class MysqlClient {
     return object
   }
 }
-
-
-
-// // /** query example **/
-// var db = new MysqlClient();
-// db.query('SELECT * FROM users').then((result) => {
-//   console.log('FINAL - query result ' + JSON.stringify(result));
-//   if(result.supressed) console.log('FINAL - error ' + result.supressed);
-// }).catch((error) => {
-//   console.log('FINAL - error ' + error);
-//   if(error.supressed) console.log('FINAL - error ' + error.supressed);
-// });
-
 
 module.exports = MysqlClient
