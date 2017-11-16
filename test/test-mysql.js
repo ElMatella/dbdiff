@@ -1,22 +1,22 @@
 /* globals describe it */
 var dedent = require('dedent')
 // var conString1 = 'mysql://sdc:@localhost/dbdiff'
-var conString1 = {
-  dialect: 'mysql',
-  username: 'sdc',
-  password: '',
-  database: 'dbdiff',
-  host: 'localhost'
-}
-// var conSettings2 = {
-    // dialect: 'mysql',
-    // username: 'devuser',
-    // password: 'Amax2youmomentary',
-    // port: '4217',
-    // database: 'dbdiff',
-    // host: 'localhost'
+// var conString1 = {
+//   dialect: 'mysql',
+//   username: 'sdc',
+//   password: '',
+//   database: 'dbdiff',
+//   host: 'localhost'
 // }
-var conSettings2 = 'mysql://devuser:Amax2youmomentary@localhost:4217/dbdiff'
+// // var conSettings2 = {
+//     // dialect: 'mysql',
+//     // username: 'devuser',
+//     // password: 'Amax2youmomentary',
+//     // port: '4217',
+//     // database: 'dbdiff',
+//     // host: 'localhost'
+// // }
+// var conSettings2 = 'mysql://devuser:Amax2youmomentary@localhost:4217/dbdiff'
 // var conString1 = 'mysql://root:@localhost/db1'
 // var conSettings2 = {
 //   dialect: 'mysql',
@@ -25,6 +25,15 @@ var conSettings2 = 'mysql://devuser:Amax2youmomentary@localhost:4217/dbdiff'
 //   database: 'db2',
 //   host: 'localhost'
 // }
+const conString1 = {
+  dialect: 'mysql',
+  username: 'sdc',
+  password: '',
+  database: 'dbdiff_1',
+  host: 'localhost'
+}
+const conSettings2 = 'mysql://devuser:Amax2youmomentary@localhost:4217/dbdiff'
+
 var utils = require('./utils')('mysql', conString1, conSettings2)
 
 describe('MySQL', () => {

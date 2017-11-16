@@ -20,6 +20,7 @@ class MysqlClient {
         host: info.hostname // host is 'localhost:port' hostname is just 'localhost'
       }, more)
     }
+
     this.options = Object.assign({
       user: options.username,
       port: port,
